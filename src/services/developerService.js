@@ -152,6 +152,15 @@ class DeveloperService {
         }
       }
 
+      // Check if developer account is active
+      if (developerDoc.isActive === false) {
+        await authService.logout();
+        throw new AppError(
+          "Your developer account has been deactivated.",
+          ErrorTypes.AUTH_ERROR
+        );
+      }
+
       // Create developer session
       await this.createDeveloperSession(user.uid);
 
@@ -552,8 +561,8 @@ class DeveloperService {
         const q = query(
           collection(db, "users"),
           where("createdBy", "==", developerId),
-          where("role", "==", "admin"),
-          where("isActive", "==", true)
+          where("role", "==", "admin")
+          // Removed isActive filter - show all admins (active and inactive)
           // removed orderBy to remove composite index requirement – we'll sort client-side
         );
         querySnapshot = await getDocs(q);
@@ -618,7 +627,7 @@ class DeveloperService {
 
       // Client-side filter/sort if we used fallback
       let filtered = admins
-        .filter((a) => a.role === "admin" && a.isActive !== false)
+        .filter((a) => a.role === "admin")
         .sort((a, b) => {
           const ta =
             (a.createdAt && a.createdAt.toMillis?.()) ||
@@ -648,7 +657,7 @@ class DeveloperService {
             );
             // Enrich with customer data
             for (const u of users) {
-              if (u.role !== "admin" || u.isActive === false) continue;
+              if (u.role !== "admin") continue; // Only check role, not isActive
               const adminData = { ...u };
               const custId = adminToCustomer.get(u.uid) || u.assignedCustomer;
               if (custId) {
@@ -663,7 +672,7 @@ class DeveloperService {
               admins.push(adminData);
             }
             filtered = admins
-              .filter((a) => a.role === "admin" && a.isActive !== false)
+              .filter((a) => a.role === "admin")
               .sort((a, b) => {
                 const ta =
                   (a.createdAt && a.createdAt.toMillis?.()) ||
@@ -706,8 +715,8 @@ class DeveloperService {
         const q = query(
           collection(db, "users"),
           where("createdBy", "==", developerId),
-          where("role", "==", "customer"),
-          where("isActive", "==", true)
+          where("role", "==", "customer")
+          // Removed isActive filter - show all customers (active and inactive)
           // removed orderBy – client-side sort
         );
         querySnapshot = await getDocs(q);
@@ -752,7 +761,7 @@ class DeveloperService {
       }
 
       let filtered = customers
-        .filter((c) => c.role === "customer" && c.isActive !== false)
+        .filter((c) => c.role === "customer")
         .sort((a, b) => {
           const ta =
             (a.createdAt && a.createdAt.toMillis?.()) ||
@@ -776,7 +785,7 @@ class DeveloperService {
               assignments.map((a) => [a.customerId, a.adminId])
             );
             for (const u of users) {
-              if (u.role !== "customer" || u.isActive === false) continue;
+              if (u.role !== "customer") continue; // Only check role, not isActive
               const customerData = { ...u };
               const admId = customerToAdmin.get(u.uid) || u.assignedAdmin;
               if (admId) {
@@ -791,7 +800,7 @@ class DeveloperService {
               customers.push(customerData);
             }
             filtered = customers
-              .filter((c) => c.role === "customer" && c.isActive !== false)
+              .filter((c) => c.role === "customer")
               .sort((a, b) => {
                 const ta =
                   (a.createdAt && a.createdAt.toMillis?.()) ||
@@ -920,6 +929,58 @@ class DeveloperService {
         "Failed to deactivate admin-customer pair",
         ErrorTypes.FIRESTORE_ERROR
       );
+    }
+  }
+
+  // Toggle user active status (admin or customer) - SIMPLIFIED VERSION
+  async toggleUserActiveStatus(userId, currentStatus, developerId) {
+    console.log("🔧 toggleUserActiveStatus START", {
+      userId,
+      currentStatus,
+      developerId,
+    });
+
+    try {
+      // Simple validation
+      if (!userId) throw new Error("User ID is required");
+      if (!developerId) throw new Error("Developer ID is required");
+      if (typeof currentStatus !== "boolean")
+        throw new Error("Current status must be boolean");
+
+      const userRef = doc(db, "users", userId);
+      const newStatus = !currentStatus;
+
+      const updateData = {
+        isActive: newStatus,
+        updatedAt: serverTimestamp(),
+        updatedBy: developerId,
+      };
+
+      if (newStatus) {
+        // Reactivating
+        updateData.deactivatedAt = null;
+        updateData.deactivatedBy = null;
+      } else {
+        // Deactivating
+        updateData.deactivatedAt = serverTimestamp();
+        updateData.deactivatedBy = developerId;
+      }
+
+      console.log(
+        "🔥 Updating Firestore document:",
+        userId,
+        "with data:",
+        updateData
+      );
+      await updateDoc(userRef, updateData);
+
+      console.log(
+        `✅ SUCCESS: User ${userId} toggled to ${newStatus ? "Active" : "Inactive"}`
+      );
+      return { success: true, newStatus };
+    } catch (error) {
+      console.error("❌ TOGGLE ERROR:", error);
+      throw error;
     }
   }
 

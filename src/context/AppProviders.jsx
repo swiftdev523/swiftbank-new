@@ -6,11 +6,14 @@ import { DataProvider } from "./DataContext";
 import { ModalProvider } from "./ModalContext";
 import { MessageProvider } from "./MessageContext";
 import { WebsiteSettingsProvider } from "./WebsiteSettingsContext";
+import { AccountsProvider } from "./AccountsContext";
+import { TransactionsProvider } from "./TransactionsContext";
 import ErrorBoundary from "../components/ErrorBoundary";
 
 /**
  * Root provider that wraps the entire application with all necessary contexts
  * This ensures proper provider hierarchy and error boundaries
+ * AccountsProvider and TransactionsProvider provide real-time Firestore sync
  */
 const AppProviders = ({ children }) => {
   return (
@@ -19,11 +22,15 @@ const AppProviders = ({ children }) => {
         <DeveloperProvider>
           <WebsiteSettingsProvider>
             <AppProvider>
-              <DataProvider>
-                <MessageProvider>
-                  <ModalProvider>{children}</ModalProvider>
-                </MessageProvider>
-              </DataProvider>
+              <AccountsProvider>
+                <TransactionsProvider>
+                  <DataProvider>
+                    <MessageProvider>
+                      <ModalProvider>{children}</ModalProvider>
+                    </MessageProvider>
+                  </DataProvider>
+                </TransactionsProvider>
+              </AccountsProvider>
             </AppProvider>
           </WebsiteSettingsProvider>
         </DeveloperProvider>

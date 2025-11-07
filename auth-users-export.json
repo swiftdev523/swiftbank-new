@@ -1,0 +1,34 @@
+{"users": [
+{
+  "localId": "BMPayIo945gjgTJpNUk3jLS9VBy1",
+  "email": "kindestwavelover@gmail.com",
+  "emailVerified": false,
+  "passwordHash": "uN4SQYKTbHPliS/KRB/xmexoLtdewzgo4u4b/dm09mNrDXOxiqi0imB3lUmdVSKapAOwgPzKuUr7/5weKSm64g==",
+  "salt": "uB1OTf374CFyDQ==",
+  "lastSignedInAt": "1762502887536",
+  "createdAt": "1759447949704",
+  "disabled": false,
+  "providerUserInfo": []
+},
+{
+  "localId": "Hg2IMBwMkqdgilzvj2psq8UuREf1",
+  "email": "seconds@swiftbank.com",
+  "emailVerified": false,
+  "passwordHash": "3cTO8Pg7gpAyKAOXOqQDLBRu73kAEshD2iO42iEnU+oH0SQi1zoyTRklwVJIzpTMp3OKdkivePRo5ed4x+ELHg==",
+  "salt": "Bnq5W8YuR/RAZg==",
+  "lastSignedInAt": "1759523533973",
+  "createdAt": "1759447706590",
+  "disabled": false,
+  "providerUserInfo": []
+},
+{
+  "localId": "XImTwn3OxsfGBDXN9PxoMzYbXZ53",
+  "email": "developer@swiftbank.com",
+  "emailVerified": false,
+  "passwordHash": "7hbi81b8ZSv5ZT0heFq5PIk16DwzxKTCwtFX91CsktkV9Tc7eWjdNj5lbuy22G4lqlt5pvuarN9mDlgOXef3aw==",
+  "salt": "lMnSGtb+40W0Jw==",
+  "lastSignedInAt": "1762502957746",
+  "createdAt": "1759190735199",
+  "disabled": false,
+  "providerUserInfo": []
+}]}

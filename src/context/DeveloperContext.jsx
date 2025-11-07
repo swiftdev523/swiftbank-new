@@ -43,6 +43,32 @@ export const DeveloperProvider = ({ children }) => {
     setIsLoading(false);
   }, []);
 
+  // Debug: Log developer state changes
+  useEffect(() => {
+    console.log("🔍 Developer state changed:", {
+      developer,
+      uid: developer?.uid,
+      email: developer?.email,
+      isDeveloperAuthenticated,
+      timestamp: new Date().toISOString(),
+    });
+  }, [developer, isDeveloperAuthenticated]);
+
+  // State consistency check - if authenticated but no developer object, reset state
+  useEffect(() => {
+    if (isDeveloperAuthenticated && (!developer || !developer.uid)) {
+      console.warn(
+        "⚠️ State inconsistency detected: authenticated but no developer object"
+      );
+      console.log("🔄 Resetting authentication state for consistency...");
+      setIsDeveloperAuthenticated(false);
+      setAdminList([]);
+      setCustomerList([]);
+      setAssignmentList([]);
+      setStats(null);
+    }
+  }, [isDeveloperAuthenticated, developer]);
+
   // Developer login
   const loginDeveloper = useCallback(
     async (email, password) => {
@@ -245,6 +271,63 @@ export const DeveloperProvider = ({ children }) => {
     [developer?.uid, loadAdmins, loadCustomers, loadAssignments, loadStats]
   );
 
+  // Toggle user active status - SIMPLIFIED VERSION
+  const toggleUserActiveStatus = useCallback(
+    async (userId, currentStatus) => {
+      console.log("🎯 DeveloperContext.toggleUserActiveStatus called", {
+        userId,
+        currentStatus,
+        hasDeveloper: !!developer,
+        developerUid: developer?.uid,
+        isDeveloperAuthenticated,
+      });
+
+      // Simple validation
+      if (!developer || !developer.uid) {
+        alert("Please login again as developer");
+        setIsDeveloperAuthenticated(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+
+        const result = await developerService.toggleUserActiveStatus(
+          userId,
+          currentStatus,
+          developer.uid
+        );
+
+        console.log("✅ Toggle successful, refreshing data...");
+
+        // Refresh data
+        await Promise.all([
+          loadAdmins(developer.uid),
+          loadCustomers(developer.uid),
+          loadAssignments(developer.uid),
+          loadStats(developer.uid),
+        ]);
+
+        console.log("✅ Data refreshed");
+        return result;
+      } catch (error) {
+        console.error("❌ Toggle error:", error);
+        alert(`Failed to toggle status: ${error.message}`);
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [
+      developer,
+      isDeveloperAuthenticated,
+      loadAdmins,
+      loadCustomers,
+      loadAssignments,
+      loadStats,
+    ]
+  );
+
   // Refresh all data
   const refreshData = useCallback(async () => {
     if (!developer?.uid) {
@@ -345,6 +428,7 @@ export const DeveloperProvider = ({ children }) => {
     logoutDeveloper,
     createAdminWithCustomer,
     deactivateAdminCustomerPair,
+    toggleUserActiveStatus,
     refreshData,
     loadAdmins,
     loadCustomers,

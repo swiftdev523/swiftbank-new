@@ -11,15 +11,23 @@ import {
   FaShieldAlt,
   FaCheckCircle,
   FaTimesCircle,
+  FaToggleOn,
+  FaToggleOff,
 } from "react-icons/fa";
 import { useDeveloper } from "../../context/DeveloperContext";
 
 const AdminManagement = () => {
-  const { adminList, customerList, deactivateAdminCustomerPair, isLoading } =
-    useDeveloper();
+  const {
+    adminList,
+    customerList,
+    deactivateAdminCustomerPair,
+    toggleUserActiveStatus,
+    isLoading,
+  } = useDeveloper();
   const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [adminToDeactivate, setAdminToDeactivate] = useState(null);
+  const [togglingUserId, setTogglingUserId] = useState(null);
 
   const handleViewAdmin = (admin) => {
     setSelectedAdmin(admin);
@@ -28,6 +36,27 @@ const AdminManagement = () => {
   const handleDeactivateAdmin = (admin) => {
     setAdminToDeactivate(admin);
     setShowDeactivateModal(true);
+  };
+
+  const handleToggleActiveStatus = async (userId, currentStatus) => {
+    console.log("🎯 AdminManagement: handleToggleActiveStatus called", {
+      userId,
+      currentStatus,
+      timestamp: new Date().toISOString(),
+    });
+    try {
+      setTogglingUserId(userId);
+      console.log(
+        "📞 AdminManagement: Calling toggleUserActiveStatus from context..."
+      );
+      await toggleUserActiveStatus(userId, currentStatus);
+      console.log("✅ AdminManagement: Toggle completed successfully");
+    } catch (error) {
+      console.error("❌ AdminManagement: Error toggling user status:", error);
+      alert("Failed to toggle user status. Please try again.");
+    } finally {
+      setTogglingUserId(null);
+    }
   };
 
   const confirmDeactivate = async () => {
@@ -146,6 +175,28 @@ const AdminManagement = () => {
                         </>
                       )}
                     </span>
+
+                    <button
+                      onClick={() =>
+                        handleToggleActiveStatus(admin.uid, admin.isActive)
+                      }
+                      disabled={togglingUserId === admin.uid}
+                      className={`p-2 rounded-lg transition-colors ${
+                        admin.isActive
+                          ? "text-orange-600 hover:bg-orange-50"
+                          : "text-green-600 hover:bg-green-50"
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      title={
+                        admin.isActive ? "Deactivate Admin" : "Activate Admin"
+                      }>
+                      {togglingUserId === admin.uid ? (
+                        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      ) : admin.isActive ? (
+                        <FaToggleOn className="text-lg" />
+                      ) : (
+                        <FaToggleOff className="text-lg" />
+                      )}
+                    </button>
 
                     <button
                       onClick={() => handleViewAdmin(admin)}

@@ -201,6 +201,17 @@ class AuthService {
 
       console.log("Firebase sign in successful");
 
+      // Check if user is active in Firestore
+      const userDoc = await this.getUserDocument(userCredential.user.uid);
+
+      if (userDoc && userDoc.isActive === false) {
+        // Sign out immediately if user is inactive
+        await signOut(auth);
+        throw new Error(
+          "Your account has been deactivated. Please contact your administrator."
+        );
+      }
+
       return {
         user: userCredential.user,
         success: true,

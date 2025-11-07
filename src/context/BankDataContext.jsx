@@ -8,6 +8,8 @@ import {
 import { where, orderBy, limit, onSnapshot } from "firebase/firestore";
 import firestoreService from "../services/firestoreService";
 import { useAuth } from "./AuthContext";
+import { useAccounts } from "./AccountsContext";
+import { useTransactions } from "./TransactionsContext";
 import { AppError, handleError } from "../utils/errorUtils";
 import { defaultBankData } from "../utils/defaultBankData";
 
@@ -24,18 +26,16 @@ export const useBankData = () => {
 export const BankDataProvider = ({ children }) => {
   const { user, userData } = useAuth();
 
+  // Get accounts and transactions from their dedicated real-time contexts
+  const { accounts, loading: accountsLoading } = useAccounts();
+  const { transactions, loading: transactionsLoading } = useTransactions();
+
   // Banking data state
   const [bankingServices, setBankingServices] = useState([]);
   const [bankingProducts, setBankingProducts] = useState([]);
   const [accountTypes, setAccountTypes] = useState([]);
   const [bankSettings, setBankSettings] = useState({});
-  const [announcements, setAnnouncements] = useState([]);
-
-  // User accounts (from AuthContext userData or hardcoded)
-  const accounts = userData?.accounts || user?.accounts || [];
-
-  // User transactions (from AuthContext userData or hardcoded)
-  const transactions = userData?.transactions || user?.transactions || []; // Loading states
+  const [announcements, setAnnouncements] = useState([]); // Loading states
   const [loading, setLoading] = useState({
     services: true,
     products: true,
@@ -268,11 +268,15 @@ export const BankDataProvider = ({ children }) => {
     accountTypes,
     bankSettings,
     announcements,
-    accounts, // Add user accounts
-    transactions, // Add user transactions
+    accounts, // Real-time accounts from AccountsContext
+    transactions, // Real-time transactions from TransactionsContext
 
     // Loading states
-    loading,
+    loading: {
+      ...loading,
+      accounts: accountsLoading,
+      transactions: transactionsLoading,
+    },
     isDataLoaded,
 
     // Error states

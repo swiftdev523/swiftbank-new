@@ -22,7 +22,7 @@ import {
 } from "../utils/transactionUtils";
 
 const TransactionsPage = () => {
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
   const { transactions: hardcodedTransactions } = useBankData();
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
@@ -119,7 +119,7 @@ const TransactionsPage = () => {
       // Even with 0 balance, create some sample transactions from 5 months ago
       const fiveMonthsAgo = new Date();
       fiveMonthsAgo.setMonth(fiveMonthsAgo.getMonth() - 5);
-      
+
       return [
         {
           id: `sample_${Date.now()}_1`,
@@ -462,7 +462,13 @@ const TransactionsPage = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-gray-50/90 to-blue-50/95"></div>
 
       <div className="relative z-10">
-        <Header customerName={user.name} />
+        <Header
+          customerName={
+            userData?.firstName
+              ? `${userData.firstName}${userData.lastName ? " " + userData.lastName : ""}`
+              : user?.displayName || user?.email?.split("@")[0] || "User"
+          }
+        />
 
         <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 pt-20 sm:pt-24 pb-20 lg:pb-8">
           <div className="bg-white rounded-xl sm:rounded-lg shadow-lg">

@@ -527,6 +527,9 @@ class FirestoreService {
       }
 
       // Strategy 2: Query by accountId patterns if userId query didn't work
+      // DISABLED: accountId field doesn't exist in transactions collection
+      // Using real-time TransactionsContext instead
+      /*
       if (transactions.length === 0) {
         try {
           console.log("📊 Trying accountId patterns...");
@@ -558,6 +561,7 @@ class FirestoreService {
           console.warn("⚠️ Account pattern queries failed:", error.message);
         }
       }
+      */
 
       // Strategy 3: Get user profile and query by fromAccount/toAccount
       if (transactions.length === 0) {

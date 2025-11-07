@@ -46,7 +46,7 @@ import clbg1 from "../assets/images/clbg1.jpg";
 import { getBankingData, getMockStatements } from "../utils/bankingUtils";
 
 const DashboardPage = () => {
-  const { user, logout: _logout } = useAuth();
+  const { user, logout: _logout, userData } = useAuth();
   const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -243,7 +243,13 @@ const DashboardPage = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-gray-50/90 to-blue-50/95"></div>
 
       <div className="relative z-10">
-        <Header customerName={user.name} />
+        <Header
+          customerName={
+            userData?.firstName
+              ? `${userData.firstName}${userData.lastName ? " " + userData.lastName : ""}`
+              : user?.displayName || user?.email?.split("@")[0] || "User"
+          }
+        />
 
         <main className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 pt-24 sm:pt-24 pb-20 lg:pb-6">
           {/* Mobile Greeting */}
