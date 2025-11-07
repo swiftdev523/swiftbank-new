@@ -1,0 +1,31 @@
+// Authentication and Security Constants
+export const AUTH_CONSTANTS = {
+  SESSION_DURATION: 30 * 60 * 1000, // 30 minutes
+  MAX_LOGIN_ATTEMPTS: 3,
+  LOCKOUT_DURATION: 15 * 60 * 1000, // 15 minutes
+  ACTIVITY_CHECK_INTERVAL: 60 * 1000, // 1 minute
+};
+
+// Security Constants
+export const SECURITY_CONSTANTS = {
+  MIN_PASSWORD_LENGTH: 8,
+  MAX_LOGIN_ATTEMPTS: 3,
+  LOCKOUT_DURATION: 15 * 60 * 1000, // 15 minutes
+  ENCRYPTION_STRENGTH: "256-bit",
+};
+
+// UI Constants
+export const UI_CONSTANTS = {
+  ANIMATION_DURATION: 300,
+  DEBOUNCE_DELAY: 300,
+  TOAST_DURATION: 5000,
+};
+
+// Banking Constants
+export const BANKING_CONSTANTS = {
+  ROUTING_NUMBER: "021000021",
+  SWIFT_CODE: "CHASUS33",
+  FDIC_LIMIT: 250000,
+  DAILY_WITHDRAWAL_LIMIT: 5000,
+  CUSTOMER_SERVICE: "1-800-CL-BANK",
+};

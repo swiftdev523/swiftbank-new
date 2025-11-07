@@ -1,0 +1,159 @@
+/* Mobile Responsiveness Enhancements */
+
+/* Admin Layout Mobile Improvements */
+@media (max-width: 768px) {
+  .admin-sidebar {
+    transform: translateX(-100%) translateZ(0);
+    transition: transform 0.3s ease-in-out;
+    will-change: transform;
+    backface-visibility: hidden;
+    contain: layout style paint;
+  }
+
+  .admin-sidebar.open {
+    transform: translateX(0) translateZ(0);
+  }
+
+  .admin-main-content {
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  .admin-navigation-item {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem 0.5rem;
+  }
+
+  .admin-navigation-item .icon {
+    margin-bottom: 0.25rem;
+  }
+}
+
+/* Authentication Manager Mobile Improvements */
+@media (max-width: 640px) {
+  .auth-manager-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .auth-manager-controls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .auth-manager-search {
+    width: 100%;
+  }
+
+  .user-card {
+    padding: 1rem;
+  }
+
+  .user-card-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .user-edit-form {
+    padding: 1rem;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-group {
+    width: 100%;
+  }
+}
+
+/* Dashboard Mobile Improvements */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Modal Mobile Improvements */
+@media (max-width: 480px) {
+  .confirmation-modal {
+    margin: 1rem;
+    max-width: calc(100vw - 2rem);
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+}
+
+/* Table Mobile Improvements */
+@media (max-width: 640px) {
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    contain: layout style;
+    will-change: scroll-position;
+  }
+
+  .table-mobile-stack {
+    display: block;
+  }
+
+  .table-mobile-stack tr {
+    display: block;
+    border: 1px solid #374151;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+
+  .table-mobile-stack td {
+    display: block;
+    text-align: left;
+    border: none;
+    padding: 0.25rem 0;
+  }
+
+  .table-mobile-stack td:before {
+    content: attr(data-label) ": ";
+    font-weight: bold;
+    color: #9ca3af;
+  }
+}
+
+/* Touch Target Improvements */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  .clickable {
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  .icon-button {
+    padding: 0.75rem;
+    touch-action: manipulation;
+  }
+
+  /* Optimize button press feedback */
+  button:active,
+  .clickable:active {
+    transform: translateZ(0) scale(0.98);
+    transition: transform 0.1s ease-out;
+  }
+}

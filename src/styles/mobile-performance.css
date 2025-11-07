@@ -1,0 +1,254 @@
+/* Mobile Performance Optimizations for Swift Bank */
+
+/* Base mobile optimization rules */
+@media (max-width: 768px) {
+  /* Force hardware acceleration for common elements */
+  .glass-morphism,
+  .admin-glass,
+  .backdrop-blur-md,
+  .backdrop-blur-sm,
+  .backdrop-blur-lg,
+  [class*="backdrop-blur"] {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    perspective: 1000px;
+    -webkit-perspective: 1000px;
+    will-change: transform, opacity;
+  }
+
+  /* Reduce backdrop filter complexity on mobile */
+  .glass-morphism {
+    backdrop-filter: blur(8px) saturate(150%);
+    -webkit-backdrop-filter: blur(8px) saturate(150%);
+  }
+
+  .admin-glass {
+    backdrop-filter: blur(10px) saturate(160%);
+    -webkit-backdrop-filter: blur(10px) saturate(160%);
+  }
+
+  /* Optimize mobile menu animations */
+  .mobile-menu-panel {
+    transform: translateZ(0);
+    will-change: transform;
+    contain: layout style paint;
+  }
+
+  /* Reduce animation complexity on mobile */
+  .floating-element {
+    animation-duration: 8s !important;
+    animation-timing-function: ease-in-out !important;
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  /* Optimize button hover effects for touch devices */
+  .btn-bounce {
+    transition:
+      transform 0.15s ease-out,
+      box-shadow 0.15s ease-out;
+  }
+
+  .btn-bounce:active {
+    transform: translateZ(0) scale(0.96);
+  }
+
+  /* Disable expensive effects on mobile */
+  .shadow-3xl,
+  .shadow-4xl {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Optimize gradient backgrounds for mobile */
+  .bg-banking-gradient,
+  .bg-success-gradient,
+  .bg-warning-gradient {
+    background-attachment: scroll; /* Fixed attachment is expensive on mobile */
+  }
+
+  /* Reduce parallax complexity */
+  [style*="background-attachment: fixed"] {
+    background-attachment: scroll !important;
+  }
+}
+
+/* Touch-specific optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Disable hover animations on touch devices */
+  .card-hover:hover {
+    transform: none;
+  }
+
+  /* Optimize touch interactions */
+  button,
+  .clickable,
+  [role="button"] {
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Faster transitions for touch feedback */
+  .transition-all {
+    transition-duration: 0.15s;
+  }
+
+  /* Remove complex hover states */
+  .hover\:scale-105:hover {
+    transform: none;
+  }
+
+  .hover\:bg-white\/20:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Performance-first animation classes */
+.mobile-optimized-fade {
+  opacity: 0;
+  transform: translateZ(0);
+  will-change: opacity;
+  transition: opacity 0.3s ease-out;
+}
+
+.mobile-optimized-fade.active {
+  opacity: 1;
+}
+
+.mobile-optimized-slide {
+  transform: translateX(-100%) translateZ(0);
+  will-change: transform;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-optimized-slide.active {
+  transform: translateX(0) translateZ(0);
+}
+
+.mobile-optimized-scale {
+  transform: scale(0.95) translateZ(0);
+  will-change: transform;
+  transition: transform 0.2s ease-out;
+}
+
+.mobile-optimized-scale.active {
+  transform: scale(1) translateZ(0);
+}
+
+/* Loading spinner optimizations for mobile */
+@media (max-width: 768px) {
+  .loading-spinner {
+    transform: translateZ(0);
+    will-change: transform;
+    contain: layout style paint;
+  }
+
+  /* Reduce spinner animation complexity */
+  .loading-spinner [style*="animation"] {
+    animation-duration: 1s !important;
+  }
+}
+
+/* Scroll performance improvements */
+.mobile-scroll-container {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: auto; /* Disable smooth scrolling on mobile for performance */
+  overscroll-behavior: contain;
+  contain: layout style paint;
+}
+
+/* Reduce reflow/repaint for common patterns */
+.mobile-layout-container {
+  contain: layout style;
+  isolation: isolate;
+}
+
+/* Memory-efficient animations */
+@keyframes mobile-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes mobile-slide-up {
+  from {
+    transform: translateY(20px) translateZ(0);
+  }
+  to {
+    transform: translateY(0) translateZ(0);
+  }
+}
+
+@keyframes mobile-gentle-float {
+  0%,
+  100% {
+    transform: translateY(0) translateZ(0);
+  }
+  50% {
+    transform: translateY(-5px) translateZ(0);
+  }
+}
+
+/* Optimized shimmer for mobile */
+.mobile-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: mobile-shimmer-animation 1.2s infinite;
+  transform: translateZ(0);
+  will-change: background-position;
+}
+
+@keyframes mobile-shimmer-animation {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .floating-element,
+  [class*="animate-"],
+  .shimmer,
+  .mobile-shimmer {
+    animation: none !important;
+  }
+
+  .transition-all,
+  .transition-transform,
+  .transition-opacity {
+    transition: none !important;
+  }
+}
+
+/* Container queries for better performance */
+@container (max-width: 768px) {
+  .responsive-blur {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+}
+
+/* Critical performance fixes for specific components */
+.mobile-header {
+  contain: layout style paint;
+  will-change: transform, background-color;
+}
+
+.mobile-modal {
+  contain: layout style paint;
+  isolation: isolate;
+}
+
+.mobile-navigation {
+  contain: layout style;
+  will-change: transform;
+}

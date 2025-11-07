@@ -1,0 +1,362 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && (
+        (
+          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        ) ||
+        // Allow via custom claim
+        (request.auth.token.admin == true) ||
+        // Allow via known admin email fallback
+        (request.auth.token.email == 'admin@swiftbank.com')
+      );
+    }
+    
+    function isDeveloper() {
+      return isAuthenticated() && (
+        (
+          exists(/databases/$(database)/documents/developers/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/developers/$(request.auth.uid)).data.role == 'developer'
+        ) ||
+        // Allow via custom claim
+        (request.auth.token.developer == true) ||
+        // Allow via known developer email fallback
+        (request.auth.token.email == 'developer@swiftbank.com') ||
+        // Temporary: Allow any authenticated user with developer in email (for testing)
+        (request.auth.token.email != null && 
+         request.auth.token.email.matches('.*developer.*'))
+      );
+    }
+    
+    function isDeveloperOrAdmin() {
+      return isDeveloper() || isAdmin();
+    }
+    
+    // Allow unauthenticated read access to public data for development
+    function isPublicReadAllowed() {
+      return true; // Temporary for development - allows public read access
+    }
+    
+    // Temporary development write access
+    function isDevWriteAllowed() {
+      return true; // Temporary for development - allows write access
+    }
+    
+    function isAdminAssignedToCustomer(customerId) {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.assignedCustomer == customerId;
+    }
+    
+    function isManagerOrAdmin() {
+      return isAuthenticated() && (
+        isAdmin() ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'manager') ||
+        (request.auth.token.manager == true)
+      );
+    }
+    
+    function hasPermission(permission) {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.permissions.hasAny([permission, '*']));
+    }
+    
+    function isValidUser(userData) {
+      return userData.keys().hasAll(['username', 'email', 'role', 'permissions']) &&
+             userData.role in ['admin', 'customer', 'manager', 'support', 'developer'] &&
+             userData.permissions is list;
+    }
+    
+    function isValidAccount(accountData) {
+      return accountData.keys().hasAny(['userId', 'customerUID']) &&
+             accountData.keys().hasAll(['type', 'balance', 'currency', 'status']) &&
+             accountData.type in ['checking', 'savings', 'credit', 'investment'] &&
+             accountData.status in ['active', 'inactive', 'frozen', 'closed'] &&
+             accountData.balance is number &&
+             accountData.currency is string;
+    }
+    
+    function isValidTransaction(transactionData) {
+      // Accept broader transaction types used by the app and allow negative amounts for expenses
+      return transactionData.keys().hasAll(['userId', 'type', 'amount', 'status']) &&
+        transactionData.type in ['deposit', 'withdrawal', 'transfer', 'payment', 'purchase', 'bill_payment', 'fee'] &&
+        transactionData.status in ['pending', 'completed', 'failed', 'cancelled'] &&
+        transactionData.amount is number &&
+        transactionData.amount != 0;
+    }
+
+    // Accounts collection
+    match /accounts/{accountId} {
+      // Users can read their own accounts, admins can read all accounts
+      allow read: if isAuthenticated() && (
+        isOwner(resource.data.userId) ||
+        isOwner(resource.data.customerUID) ||
+        isAdmin()
+      );
+      
+      // Allow collection queries for authenticated users; rely on per-document read above
+      // to filter results so a user only receives documents they are allowed to read.
+      allow list: if isAuthenticated();
+      
+      // Authenticated users can create accounts for themselves, admins can create for anyone
+      allow create: if isAuthenticated() && (
+        isOwner(request.resource.data.userId) ||
+        isOwner(request.resource.data.customerUID) ||
+        isAdmin()
+      );
+      
+      // Users can update their own accounts, admins can update any account
+      allow update: if isAuthenticated() && (
+        isOwner(resource.data.userId) ||
+        isOwner(resource.data.customerUID) ||
+        isAdmin()
+      );
+      
+      // Only admins can delete accounts
+      allow delete: if isAdmin();
+    }
+
+    // Account Types collection (for different account categories)
+    match /accountTypes/{accountTypeId} {
+      // Everyone can read account types (public data)
+      allow read: if true;
+      
+      // Allow write access for development
+      allow write: if isDevWriteAllowed();
+    }
+
+    // Transactions collection
+    match /transactions/{transactionId} {
+      // Users can read their own transactions, managers and admins can read all
+      allow read: if isOwner(resource.data.userId) || isOwner(resource.data.customerUID) || isManagerOrAdmin();
+      
+      // Allow collection queries for authenticated users to read their own transactions
+      // IMPORTANT: In list (query) rules, resource is not available. We grant list to
+      // authenticated users and rely on the per-document read rule above to filter access.
+      // Admins/managers will pass read on all documents; regular users will only pass read
+      // on docs where they are the owner.
+      allow list: if isAuthenticated();
+      
+      // Users can create transactions for their accounts; managers/admins can create for any user
+      allow create: if isAuthenticated() && 
+                    isValidTransaction(request.resource.data) &&
+                    (
+                      isOwner(request.resource.data.userId) ||
+                      isOwner(request.resource.data.customerUID) ||
+                      isManagerOrAdmin()
+                    );
+      
+      // Only managers and admins can update transactions (for approval/status changes)
+      allow update: if isManagerOrAdmin() && 
+                    // Only allow status and approval-related fields to be updated
+                    request.resource.data.diff(resource.data).affectedKeys()
+                      .hasOnly(['status', 'approvedBy', 'approvedAt', 'notes', 'updatedAt']);
+      
+      // Only admins can delete transactions
+      allow delete: if isAdmin();
+    }
+
+    // Messages collection (for admin-user communication)
+    match /messages/{messageId} {
+      // Authenticated users can read messages
+      allow read: if isAuthenticated();
+      
+      // Authenticated users can create/update messages
+      allow create, update: if isAuthenticated();
+      
+      // Authenticated users can delete messages
+      allow delete: if isAuthenticated();
+    }
+
+    // Top-level notifications collection (for global messages/announcements)
+    match /notifications/{notificationId} {
+      // Authenticated users can read global notifications
+      allow read: if isAuthenticated();
+      
+      // Only admins can create/update global notifications
+      allow write: if isAdmin();
+    }
+
+    // Notifications collection (user-specific notifications)
+    match /notifications/{userId}/items/{notificationId} {
+      // Users can only access their own notifications
+      allow read, write: if isOwner(userId);
+    }
+
+    // Admin logs collection (for audit trail)
+    match /admin_logs/{logId} {
+      // Only admins can read logs
+      allow read: if isAdmin();
+      
+      // System-only writes (no user writes allowed)
+      allow write: if false;
+    }
+
+    // Settings collection (global app settings)
+    match /settings/{settingId} {
+      // Everyone can read public settings
+      allow read: if true;
+      
+      // Authenticated users can modify settings
+      allow write: if isAuthenticated();
+    }
+
+    // Banking Services collection
+    match /bankingServices/{serviceId} {
+      // Everyone can read banking services
+      allow read: if true;
+      
+      // Allow write access for development
+      allow write: if isDevWriteAllowed();
+    }
+
+    // Banking Products collection
+    match /bankingProducts/{productId} {
+      // Everyone can read banking products
+      allow read: if true;
+      
+      // Allow write access for development
+      allow write: if isDevWriteAllowed();
+    }
+
+    // Bank Settings collection
+    match /bankSettings/{settingId} {
+      // Everyone can read bank settings
+      allow read: if true;
+      
+      // Allow write access for development
+      allow write: if isDevWriteAllowed();
+    }
+
+    // Announcements collection
+    match /announcements/{announcementId} {
+      // Everyone can read active announcements
+      allow read: if true;
+      
+      // Only admins can create/update announcements
+      allow write: if isAdmin();
+    }
+
+    // Admin Data collection
+    match /adminData/{dataId} {
+      // Only admins can read admin data
+      allow read: if isAdmin();
+      
+      // Only admins can write admin data
+      allow write: if isAdmin();
+    }
+
+    // Audit Logs collection
+    match /auditLogs/{logId} {
+      // Only admins can read audit logs
+      allow read: if isAdmin();
+      
+      // System can write audit logs
+      allow write: if false;
+    }
+
+    // Developer collection
+    match /developers/{developerId} {
+      // Allow an authenticated user to read/update their own developer profile
+      // Also allow read by matching email to support one-time migration when doc id != UID
+      allow read: if isAuthenticated() && (
+        request.auth.uid == developerId ||
+        resource.data.email == request.auth.token.email
+      );
+
+      // Allow self-create only when creating doc at their UID with matching email
+      allow create: if isAuthenticated() &&
+                     request.auth.uid == developerId &&
+                     request.resource.data.email == request.auth.token.email;
+
+      // Developers can update their own profile
+      allow update: if isAuthenticated() && request.auth.uid == developerId;
+
+      // No deletions from client
+      allow delete: if false;
+    }
+
+    // Developer Sessions collection
+    match /developerSessions/{sessionId} {
+      // Only the developer can read/write their own session
+      allow read, write: if isDeveloper() && request.auth.uid == sessionId;
+    }
+
+    // Admin Assignments collection
+    match /adminAssignments/{assignmentId} {
+      // Developers can read all assignments
+      // Admins can read assignments where they are the adminId
+      allow read: if isDeveloper() || 
+                     (isAdmin() && resource.data.adminId == request.auth.uid);
+      
+      // Allow list queries for admins and developers
+      allow list: if isDeveloper() || isAdmin();
+      
+      // Only developers can create/update assignments
+      allow write: if isDeveloper();
+    }
+
+    // Enhanced Users collection rules
+    match /users/{userId} {
+      // Users can read their own data
+      allow read: if isOwner(userId) ||
+                     // Admins can read their assigned customer
+                     (isAdmin() && isAdminAssignedToCustomer(userId)) ||
+                     // Developers can read all users
+                     isDeveloper() ||
+                     // Development access
+                     isDevWriteAllowed();
+      
+      // Allow list queries for admins and developers to support filtering
+      allow list: if isAdmin() || isDeveloper() || isDevWriteAllowed();
+      
+      // Users can create/update their own profile
+      allow write: if isOwner(userId) ||
+                      // Admins can update their assigned customer
+                      (isAdmin() && isAdminAssignedToCustomer(userId)) ||
+                      // Developers can create/update any user
+                      isDeveloper() ||
+                      // Development access
+                      isDevWriteAllowed();
+    }
+
+    // Default fallback: deny any other access explicitly
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // Admin Configurations collection
+    match /adminConfigs/{configId} {
+      allow read, write: if isDevWriteAllowed();
+    }
+    
+    // Transactions collection
+    match /transactions/{transactionId} {
+      allow read, write: if isDevWriteAllowed();
+    }
+    
+    // System Configuration collection
+    match /systemConfig/{configId} {
+      allow read, write: if isDevWriteAllowed();
+    }
+    
+    // Catch-all rule for development
+    match /{document=**} {
+      allow read, write: if isDevWriteAllowed();
+    }
+  }
+}

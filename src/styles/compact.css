@@ -1,0 +1,57 @@
+/* Additional compact styling utilities */
+
+/* Compact button styles */
+.btn-compact {
+  @apply px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200;
+}
+
+.btn-compact-sm {
+  @apply px-2 py-1.5 text-xs font-medium rounded-md transition-all duration-200;
+}
+
+/* Minimalistic card styles */
+.card-minimal {
+  @apply bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200/50 transition-all duration-200;
+}
+
+.card-minimal:hover {
+  @apply shadow-xl border-gray-200/80;
+}
+
+/* Compact spacing utilities */
+.space-compact > * + * {
+  margin-top: 0.75rem;
+}
+
+.space-compact-sm > * + * {
+  margin-top: 0.5rem;
+}
+
+/* Typography improvements */
+.text-display {
+  font-family: "Poppins", "Inter", system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.text-body {
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.text-mono {
+  font-family: "JetBrains Mono", "Fira Code", "Monaco", "Consolas", monospace;
+  font-weight: 400;
+}
+
+/* Reduced motion for better accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .transform,
+  .transition-all,
+  .animate-pulse,
+  .animate-bounce {
+    animation: none !important;
+    transition: none !important;
+  }
+}

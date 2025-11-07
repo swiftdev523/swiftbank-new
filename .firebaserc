@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "default": "swiftbank-2811b",
+    "swiftbank": "swiftbank-2811b"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
+}

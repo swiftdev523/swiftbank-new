@@ -1,0 +1,59 @@
+{
+  "users": [
+    {
+      "localId": "dev-001",
+      "email": "developer@swiftbank.com",
+      "emailVerified": true,
+      "passwordHash": "Developer123!",
+      "displayName": "System Developer",
+      "customClaims": {
+        "role": "developer",
+        "developer": true,
+        "permissions": ["all"]
+      },
+      "createdAt": "2024-10-04T00:00:00.000Z",
+      "lastSignedInAt": "2024-10-04T00:00:00.000Z",
+      "disabled": false
+    },
+    {
+      "localId": "admin-001",
+      "email": "admin1@clbank.com",
+      "emailVerified": true,
+      "passwordHash": "Admin123!",
+      "displayName": "John Administrator",
+      "customClaims": {
+        "role": "admin",
+        "admin": true,
+        "adminLevel": "senior"
+      },
+      "createdAt": "2024-10-04T00:00:00.000Z",
+      "disabled": false
+    },
+    {
+      "localId": "admin-002",
+      "email": "admin2@clbank.com",
+      "emailVerified": true,
+      "passwordHash": "Admin123!",
+      "displayName": "Sarah Manager",
+      "customClaims": {
+        "role": "admin",
+        "admin": true,
+        "adminLevel": "standard"
+      },
+      "createdAt": "2024-10-04T00:00:00.000Z",
+      "disabled": false
+    },
+    {
+      "localId": "cust-001",
+      "email": "customer1@email.com",
+      "emailVerified": true,
+      "passwordHash": "Customer123!",
+      "displayName": "Alice Johnson",
+      "customClaims": {
+        "role": "customer"
+      },
+      "createdAt": "2024-10-04T00:00:00.000Z",
+      "disabled": false
+    }
+  ]
+}

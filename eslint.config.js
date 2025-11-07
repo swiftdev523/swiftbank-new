@@ -1,0 +1,60 @@
+import js from "@eslint/js";
+import globals from "globals";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import { defineConfig, globalIgnores } from "eslint/config";
+
+export default defineConfig([
+  globalIgnores(["dist"]),
+  {
+    files: ["**/*.{js,jsx}"],
+    extends: [
+      js.configs.recommended,
+      reactHooks.configs["recommended-latest"],
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+      parserOptions: {
+        ecmaVersion: "latest",
+        ecmaFeatures: { jsx: true },
+        sourceType: "module",
+      },
+    },
+    rules: {
+      "no-unused-vars": [
+        "error",
+        {
+          varsIgnorePattern: "^[A-Z_]|^motion$",
+          argsIgnorePattern: "^_",
+        },
+      ],
+      "react-refresh/only-export-components": [
+        "warn",
+        { allowConstantExport: true },
+      ],
+    },
+  },
+  // Node scripts and Cloud Functions (CommonJS) override
+  {
+    files: [
+      "scripts/**/*.{js,cjs,mjs}",
+      "functions/**/*.js",
+      "*.cjs",
+      "add*.js",
+      "simple-*.js",
+      "update-user-names.js",
+      "check-user-data.js",
+    ],
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: "script",
+      globals: globals.node,
+    },
+    rules: {
+      // Allow Node globals like require/process/exports/module
+      "no-undef": "off",
+    },
+  },
+]);
