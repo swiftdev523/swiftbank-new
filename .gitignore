@@ -74,3 +74,11 @@ pnpm-lock.yaml
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Firebase Service Account Keys
+service-account-key.json
+*.json.key
+*service-account*.json
+
+# Firebase config files with secrets
+firebase-adminsdk-*.json
