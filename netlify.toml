@@ -1,16 +1,16 @@
 [build]
   publish = "dist"
-  command = "npm run build:netlify"
+  command = "npm install && npm run build:safe"
   
 [build.environment]
-  # Disable script execution during build to prevent API key scanning
+  # Ensure all dependencies are installed including devDependencies
+  NPM_FLAGS = "--include=dev"
   CI = "true"
   NODE_ENV = "production"
   # Disable secret scanning for known safe values
   SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES = "true"
 
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+# Plugins removed - using Vite build system
 
 [context.production.environment]
   VITE_ENVIRONMENT = "production"

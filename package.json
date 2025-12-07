@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:netlify": "CI=true NETLIFY=true vite build --mode production",
+    "build:safe": "npx --yes vite@^7.1.2 build --mode production",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
