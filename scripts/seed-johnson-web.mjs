@@ -23,7 +23,8 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // Get user UID from environment or fetch from Firebase
-const JOHNSON_BOSEMAN_EMAIL = process.env.CUSTOMER_EMAIL || "customer@swiftbank.com";
+const JOHNSON_BOSEMAN_EMAIL =
+  process.env.CUSTOMER_EMAIL || "customer@swiftbank.com";
 let JOHNSON_BOSEMAN_UID = process.env.CUSTOMER_UID;
 
 // If UID not provided, we'll fetch it after authentication

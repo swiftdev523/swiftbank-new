@@ -84,12 +84,15 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // Developer details from environment variables (secure)
-const DEVELOPER_EMAIL = process.env.DEVELOPER_EMAIL || "developer@swiftbank.com";
+const DEVELOPER_EMAIL =
+  process.env.DEVELOPER_EMAIL || "developer@swiftbank.com";
 const DEVELOPER_PASSWORD = process.env.DEVELOPER_PASSWORD;
 
 if (!DEVELOPER_PASSWORD) {
-  console.error('❌ DEVELOPER_PASSWORD environment variable is required');
-  console.log('💡 Set it with: export DEVELOPER_PASSWORD="your-developer-password"');
+  console.error("❌ DEVELOPER_PASSWORD environment variable is required");
+  console.log(
+    '💡 Set it with: export DEVELOPER_PASSWORD="your-developer-password"'
+  );
   process.exit(1);
 }
 
