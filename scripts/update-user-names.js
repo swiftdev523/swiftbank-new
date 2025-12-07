@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCo1ezOaGvNhJUWFrQGjlhwKic2UW7Pz6w",
+  apiKey: process.env.VITE_FIREBASE_API_KEY || "SAFE_PLACEHOLDER",
   authDomain: "clbank-14206.firebaseapp.com",
   projectId: "clbank-14206",
   storageBucket: "clbank-14206.firebasestorage.app",

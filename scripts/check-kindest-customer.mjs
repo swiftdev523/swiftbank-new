@@ -10,17 +10,15 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
+import { getFirebaseConfig, isFirebaseAvailable } from "./firebase-config.mjs";
 
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyDQyIykkMu8xAFgWAG7c71T2TeCBP7GnZw",
-  authDomain: "cl-bank-2b5c7.firebaseapp.com",
-  projectId: "cl-bank-2b5c7",
-  storageBucket: "cl-bank-2b5c7.firebasestorage.app",
-  messagingSenderId: "1062047493720",
-  appId: "1:1062047493720:web:54a8ad4a306a7b0db9ad87",
-  measurementId: "G-2Y6PTLDGLJ",
-};
+// Get Firebase configuration securely
+const firebaseConfig = getFirebaseConfig();
+
+if (!isFirebaseAvailable()) {
+  console.log('📝 Running in simulation mode - Firebase not available');
+  process.exit(0);
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

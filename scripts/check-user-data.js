@@ -2,12 +2,12 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCo1ezOaGvNhJUWFrQGjlhwKic2UW7Pz6w",
-  authDomain: "clbank-14206.firebaseapp.com",
-  projectId: "clbank-14206",
-  storageBucket: "clbank-14206.firebasestorage.app",
-  messagingSenderId: "721572118498",
-  appId: "1:721572118498:web:203dd599da7c504d56b2ac",
+  apiKey: process.env.VITE_FIREBASE_API_KEY || "SAFE_PLACEHOLDER",
+  authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN || "placeholder.firebaseapp.com",
+  projectId: process.env.VITE_FIREBASE_PROJECT_ID || "placeholder-project",
+  storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET || "placeholder.firebasestorage.app",
+  messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "000000000000",
+  appId: process.env.VITE_FIREBASE_APP_ID || "1:000000000000:web:placeholder",
 };
 
 // Initialize Firebase

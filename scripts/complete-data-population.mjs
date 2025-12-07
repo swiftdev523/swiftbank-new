@@ -17,7 +17,7 @@ import {
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBe1-_WMF0DxSp9xLxhb7DhQZ6j4UqPbYU",
+  apiKey: process.env.VITE_FIREBASE_API_KEY || "SAFE_PLACEHOLDER",
   authDomain: "swiftbank-2811b.firebaseapp.com",
   projectId: "swiftbank-2811b",
   storageBucket: "swiftbank-2811b.firebasestorage.app",

@@ -11,7 +11,7 @@ import readline from "readline";
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDr4b7RvGtrhm8qpB5c_HvjePaEOlK5LfY",
+  apiKey: process.env.VITE_FIREBASE_API_KEY || "SAFE_PLACEHOLDER",
   authDomain: "swiftbank-2811b.firebaseapp.com",
   projectId: "swiftbank-2811b",
   storageBucket: "swiftbank-2811b.firebasestorage.app",

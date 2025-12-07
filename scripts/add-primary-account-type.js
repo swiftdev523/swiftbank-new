@@ -1,15 +1,14 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getFirebaseConfig, isFirebaseAvailable } from "./firebase-config.mjs";
 
-// Your Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyAwH4A5HML5FGN-W6F3p9CIJ4qG2NBhQEQ",
-  authDomain: "swiftbank-2811b.firebaseapp.com",
-  projectId: "swiftbank-2811b",
-  storageBucket: "swiftbank-2811b.firebasestorage.app",
-  messagingSenderId: "368630072583",
-  appId: "1:368630072583:web:fd8bbceedb88fdda7c2e1c",
-};
+// Get Firebase configuration securely
+const firebaseConfig = getFirebaseConfig();
+
+if (!isFirebaseAvailable()) {
+  console.log('📝 Running in simulation mode - Firebase not available');
+  process.exit(0);
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

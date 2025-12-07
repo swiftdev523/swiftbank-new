@@ -82,3 +82,9 @@ service-account-key.json
 
 # Firebase config files with secrets
 firebase-adminsdk-*.json
+
+# Scripts with sensitive data (development only)
+scripts/*-with-keys.js
+scripts/*-with-keys.mjs
+scripts/local-*.js
+scripts/local-*.mjs
