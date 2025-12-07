@@ -2,8 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-// Analytics disabled to prevent API key errors
-// import { getAnalytics } from "firebase/analytics";
+import { getAnalytics } from "firebase/analytics";
 
 // Firebase configuration - using environment variables only
 const firebaseConfig = {
@@ -98,16 +97,21 @@ try {
   db = getFirestore(app);
   storage = getStorage(app);
 
-  // Analytics disabled to prevent API errors
-  // Uncomment and configure Analytics only if needed and properly set up
-  // if (import.meta.env.PROD && firebaseConfig.measurementId) {
-  //   try {
-  //     analytics = getAnalytics(app);
-  //     console.log('📊 Analytics initialized');
-  //   } catch (analyticsError) {
-  //     console.warn('⚠️ Analytics initialization failed:', analyticsError.message);
-  //   }
-  // }
+  // Initialize Analytics for production with proper error handling
+  if (
+    import.meta.env.VITE_ENABLE_ANALYTICS === "true" &&
+    firebaseConfig.measurementId
+  ) {
+    try {
+      analytics = getAnalytics(app);
+      console.log("📊 Analytics initialized successfully");
+    } catch (analyticsError) {
+      console.warn(
+        "⚠️ Analytics initialization failed:",
+        analyticsError.message
+      );
+    }
+  }
 
   isFirebaseConfigured = true;
   console.log("✅ Firebase initialized successfully");

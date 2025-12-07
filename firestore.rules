@@ -43,14 +43,14 @@ service cloud.firestore {
       return isDeveloper() || isAdmin();
     }
     
-    // Allow unauthenticated read access to public data for development
+    // Production-ready access controls
     function isPublicReadAllowed() {
-      return true; // Temporary for development - allows public read access
+      return false; // No public read access in production
     }
     
-    // Temporary development write access
+    // Strict write access control for production
     function isDevWriteAllowed() {
-      return true; // Temporary for development - allows write access
+      return isDeveloper(); // Only developers can write in production
     }
     
     function isAdminAssignedToCustomer(customerId) {

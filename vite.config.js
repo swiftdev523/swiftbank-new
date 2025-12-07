@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
   build: {
     // Optimize for production
@@ -36,5 +36,14 @@ export default defineConfig({
     hmr: {
       overlay: false,
     },
+    port: 5173,
+    host: true, // Allow external connections
   },
-});
+  // Define environment-specific settings
+  define: {
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+    __BUILD_DATE__: JSON.stringify(new Date().toISOString()),
+  },
+  // Environment file configuration
+  envPrefix: "VITE_",
+}));
