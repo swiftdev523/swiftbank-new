@@ -83,10 +83,17 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Developer details from the Firebase Auth screenshot
-const DEVELOPER_UID = "XImTwn30xsfGBDXN9PxoMzr6p4y2"; // From your screenshot
-const DEVELOPER_EMAIL = "developer@swiftbank.com";
-const DEVELOPER_PASSWORD = "developer123"; // You should know this password
+// Developer details from environment variables (secure)
+const DEVELOPER_EMAIL = process.env.DEVELOPER_EMAIL || "developer@swiftbank.com";
+const DEVELOPER_PASSWORD = process.env.DEVELOPER_PASSWORD;
+
+if (!DEVELOPER_PASSWORD) {
+  console.error('❌ DEVELOPER_PASSWORD environment variable is required');
+  console.log('💡 Set it with: export DEVELOPER_PASSWORD="your-developer-password"');
+  process.exit(1);
+}
+
+// UID will be determined after authentication - no hardcoded UIDs
 
 async function createDeveloperDocuments() {
   try {

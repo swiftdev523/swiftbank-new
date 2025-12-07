@@ -6,7 +6,7 @@ import { getFirebaseConfig, isFirebaseAvailable } from "./firebase-config.mjs";
 const firebaseConfig = getFirebaseConfig();
 
 if (!isFirebaseAvailable()) {
-  console.log('📝 Running in simulation mode - Firebase not available');
+  console.log("📝 Running in simulation mode - Firebase not available");
   process.exit(0);
 }
 

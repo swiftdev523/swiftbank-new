@@ -7,7 +7,7 @@ The Netlify build was failing due to hardcoded Firebase API keys being detected 
 ✅ **Removed all hardcoded API keys** from script files  
 ✅ **Replaced with environment variables** and safe placeholders  
 ✅ **Added build-safe configuration** with `netlify.toml`  
-✅ **Created secure script system** that exits safely during builds  
+✅ **Created secure script system** that exits safely during builds
 
 ## 🔧 Netlify Environment Variables Setup
 

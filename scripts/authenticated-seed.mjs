@@ -31,9 +31,18 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Developer credentials
-const DEVELOPER_EMAIL = "developer@swiftbank.com";
-const DEVELOPER_PASSWORD = "developer123";
+// Developer credentials from environment
+const DEVELOPER_EMAIL =
+  process.env.DEVELOPER_EMAIL || "developer@swiftbank.com";
+const DEVELOPER_PASSWORD = process.env.DEVELOPER_PASSWORD;
+
+if (!DEVELOPER_PASSWORD) {
+  console.error("❌ DEVELOPER_PASSWORD environment variable is required");
+  console.log(
+    '💡 Set it with: export DEVELOPER_PASSWORD="your-secure-password"'
+  );
+  process.exit(1);
+}
 
 console.log("🔐 Authenticated Database Seeding");
 console.log("=================================");

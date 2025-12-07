@@ -36,12 +36,23 @@ console.log("🔧 Creating Seconds Wave Admin Account");
 
 async function createSecondsWaveAdmin() {
   try {
-    const email = "seconds@swiftbank.com";
-    const password = "admin123"; // Simple password for testing
-    const expectedUID = "pcwE3m8EnNSeMTrx3JOckHUj15H2"; // From assignments
+    // Get credentials from environment variables or command line
+    const email = process.env.ADMIN_EMAIL || "admin@swiftbank.com";
+    const password = process.env.ADMIN_PASSWORD || generateSecurePassword();
 
     console.log(`📧 Creating admin account: ${email}`);
-    console.log(`🔑 Password: ${password}`);
+    console.log(`🔑 Password will be generated securely`);
+
+    // Helper function to generate secure password
+    function generateSecurePassword() {
+      const chars =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+      let password = "";
+      for (let i = 0; i < 12; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return password;
+    }
 
     // First, check if user document already exists
     console.log("\n📋 Checking existing user document...");

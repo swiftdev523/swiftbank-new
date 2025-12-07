@@ -32,7 +32,16 @@ const generateAccountNumber = () => {
 
 async function addMissingAccount() {
   try {
-    const customerUID = "mYFGjRgsARS0AheCdYUkzhMRLkk2";
+    // Get customer UID from environment or find by email
+    const customerUID = process.env.CUSTOMER_UID;
+    const customerEmail = process.env.CUSTOMER_EMAIL;
+
+    if (!customerUID && !customerEmail) {
+      console.error(
+        "❌ Either CUSTOMER_UID or CUSTOMER_EMAIL environment variable is required"
+      );
+      process.exit(1);
+    }
 
     // Create the missing primary checking account
     const primaryAccount = {

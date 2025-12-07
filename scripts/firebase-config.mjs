@@ -2,20 +2,22 @@
 // Secure Firebase configuration for scripts
 // This file reads from environment variables to avoid hardcoded secrets
 
-import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Load environment variables from root .env file
-dotenv.config({ path: join(__dirname, '..', '.env') });
+dotenv.config({ path: join(__dirname, "..", ".env") });
 
 export const getFirebaseConfig = () => {
   // Check if we're in a CI/build environment where we should skip Firebase operations
-  if (process.env.CI === 'true' || process.env.NETLIFY === 'true') {
-    console.warn('⚠️ Detected CI/Build environment. Firebase operations will be skipped.');
+  if (process.env.CI === "true" || process.env.NETLIFY === "true") {
+    console.warn(
+      "⚠️ Detected CI/Build environment. Firebase operations will be skipped."
+    );
     return null;
   }
 
@@ -31,12 +33,14 @@ export const getFirebaseConfig = () => {
 
   // Validate that all required config values are present
   const missingConfig = Object.entries(config)
-    .filter(([key, value]) => key !== 'measurementId' && !value)
+    .filter(([key, value]) => key !== "measurementId" && !value)
     .map(([key]) => key);
 
   if (missingConfig.length > 0) {
-    console.warn('⚠️ Missing Firebase configuration:', missingConfig);
-    console.warn('📝 Scripts will run in simulation mode without Firebase connectivity');
+    console.warn("⚠️ Missing Firebase configuration:", missingConfig);
+    console.warn(
+      "📝 Scripts will run in simulation mode without Firebase connectivity"
+    );
     return null;
   }
 

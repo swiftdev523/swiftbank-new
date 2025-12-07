@@ -17,7 +17,17 @@ try {
   const resetPassword = async () => {
     try {
       const uid = "pcwE3m8EnNSeMTrx3JOckHUj15H2";
-      const newPassword = "admin123";
+      const newPassword =
+        process.env.NEW_ADMIN_PASSWORD || generateSecurePassword();
+
+      function generateSecurePassword() {
+        const chars =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        return Array.from(
+          { length: 12 },
+          () => chars[Math.floor(Math.random() * chars.length)]
+        ).join("");
+      }
 
       console.log(`🔐 Resetting password for UID: ${uid}`);
 

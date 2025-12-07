@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // Safe placeholder script - prevents hardcoded API key exposure during builds
-import { exitIfBuildEnvironment } from './secure-config.mjs';
+import { exitIfBuildEnvironment } from "./secure-config.mjs";
 
 // Exit immediately in build environments to prevent API key scanning
 exitIfBuildEnvironment();
 
-console.log('🔒 Script disabled during build to protect sensitive credentials');
+console.log("🔒 Script disabled during build to protect sensitive credentials");
 
 // Secure Firebase configuration (only loads in development)
 const firebaseConfig = null; // Replaced with secure loader

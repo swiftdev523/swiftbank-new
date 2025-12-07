@@ -153,7 +153,8 @@ const DashboardOverview = () => {
 
   // DISABLED: Balance update function to prevent Firebase quota exhaustion
   const updateJohnsonBalances = async () => {
-    if (user?.uid !== "mYFGjRgsARS0AheCdYUkzhMRLkk2") {
+    // Dynamic user check - no hardcoded UIDs
+    if (!user?.uid || !user?.email) {
       return;
     }
 

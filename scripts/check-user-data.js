@@ -3,10 +3,14 @@ import { getFirestore, doc, getDoc } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.VITE_FIREBASE_API_KEY || "SAFE_PLACEHOLDER",
-  authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN || "placeholder.firebaseapp.com",
+  authDomain:
+    process.env.VITE_FIREBASE_AUTH_DOMAIN || "placeholder.firebaseapp.com",
   projectId: process.env.VITE_FIREBASE_PROJECT_ID || "placeholder-project",
-  storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET || "placeholder.firebasestorage.app",
-  messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "000000000000",
+  storageBucket:
+    process.env.VITE_FIREBASE_STORAGE_BUCKET ||
+    "placeholder.firebasestorage.app",
+  messagingSenderId:
+    process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "000000000000",
   appId: process.env.VITE_FIREBASE_APP_ID || "1:000000000000:web:placeholder",
 };
 

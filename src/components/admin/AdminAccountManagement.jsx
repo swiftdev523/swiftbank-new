@@ -219,7 +219,12 @@ const AdminAccountManagement = () => {
   // Function to add missing account
   const addMissingAccount = async () => {
     try {
-      const customerUID = "mYFGjRgsARS0AheCdYUkzhMRLkk2"; // John Boseman's UID
+      // Get customer UID dynamically from context or props
+      const customerUID = user?.assignedCustomer || user?.uid;
+
+      if (!customerUID) {
+        throw new Error("No customer UID available");
+      }
 
       // Generate account number
       const generateAccountNumber = () => {

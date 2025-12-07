@@ -22,8 +22,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Johnson Boseman's user ID
-const JOHNSON_BOSEMAN_UID = "mYFGjRgsARS0AheCdYUkzhMRLkk2";
+// Get user UID from environment or fetch from Firebase
+const JOHNSON_BOSEMAN_EMAIL = process.env.CUSTOMER_EMAIL || "customer@swiftbank.com";
+let JOHNSON_BOSEMAN_UID = process.env.CUSTOMER_UID;
+
+// If UID not provided, we'll fetch it after authentication
 
 // Account data for Johnson Boseman - All fields are editable by admin
 const johnsonAccounts = [

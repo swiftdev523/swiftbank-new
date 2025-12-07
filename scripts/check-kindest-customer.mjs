@@ -16,7 +16,7 @@ import { getFirebaseConfig, isFirebaseAvailable } from "./firebase-config.mjs";
 const firebaseConfig = getFirebaseConfig();
 
 if (!isFirebaseAvailable()) {
-  console.log('📝 Running in simulation mode - Firebase not available');
+  console.log("📝 Running in simulation mode - Firebase not available");
   process.exit(0);
 }
 
@@ -27,7 +27,18 @@ const db = getFirestore(app);
 async function checkKindestCustomer() {
   console.log("🔍 Checking kindestwavelover@gmail.com customer setup...\n");
 
-  const email = "kindestwavelover@gmail.com";
+  // Get email from environment or command line argument
+  const email =
+    process.env.CUSTOMER_EMAIL || process.argv[2] || "customer@swiftbank.com";
+
+  if (!email.includes("@")) {
+    console.error("❌ Valid email required");
+    console.log(
+      "💡 Usage: node check-kindest-customer.mjs customer@example.com"
+    );
+    console.log("💡 Or set CUSTOMER_EMAIL environment variable");
+    process.exit(1);
+  }
 
   try {
     // 1. Check for user document by email

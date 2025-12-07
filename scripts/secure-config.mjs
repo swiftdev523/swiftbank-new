@@ -3,24 +3,27 @@
 
 export const SCRIPT_CONFIG = {
   // Environment detection
-  isCI: process.env.CI === 'true' || process.env.NETLIFY === 'true',
-  isDevelopment: process.env.NODE_ENV === 'development',
-  
+  isCI: process.env.CI === "true" || process.env.NETLIFY === "true",
+  isDevelopment: process.env.NODE_ENV === "development",
+
   // Safe project identifiers (not sensitive)
   projectInfo: {
-    name: 'SwiftBank',
-    description: 'Modern Banking Application'
+    name: "SwiftBank",
+    description: "Modern Banking Application",
   },
-  
+
   // Simulation mode message
-  simulationMessage: '📝 Running in simulation mode - Firebase operations skipped for security'
+  simulationMessage:
+    "📝 Running in simulation mode - Firebase operations skipped for security",
 };
 
 // Function to safely exit scripts in build environments
 export function exitIfBuildEnvironment() {
   if (SCRIPT_CONFIG.isCI) {
     console.log(SCRIPT_CONFIG.simulationMessage);
-    console.log('✅ Build environment detected - script execution completed safely');
+    console.log(
+      "✅ Build environment detected - script execution completed safely"
+    );
     process.exit(0);
   }
 }
@@ -30,7 +33,7 @@ export function getSecureConfig() {
   if (SCRIPT_CONFIG.isCI) {
     return null;
   }
-  
+
   // Only load environment variables in non-build environments
   return {
     apiKey: process.env.VITE_FIREBASE_API_KEY,
@@ -38,6 +41,6 @@ export function getSecureConfig() {
     projectId: process.env.VITE_FIREBASE_PROJECT_ID,
     storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
     messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.VITE_FIREBASE_APP_ID
+    appId: process.env.VITE_FIREBASE_APP_ID,
   };
 }
